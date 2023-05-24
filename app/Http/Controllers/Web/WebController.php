@@ -17,15 +17,9 @@ class WebController extends Controller
     public function submitText(Request $request)
     {
 
-        $hosts = [
-            'host' => '127.0.0.1',
-            'port' => '9200',
-            'scheme' => 'http',
-            'user' => 'elastic',
-            'pass' => 'CfPhE7CtnNCiSXDlSkJt'
-        ];
+
         $client = ClientBuilder::create()
-            ->setHosts(['http://localhost:9200'])->setBasicAuthentication('elastic', 'CfPhE7CtnNCiSXDlSkJt')
+            ->setHosts(['http://localhost:9200'])->setBasicAuthentication('elastic', 'rJuvX56xBE4_erA+VOL5')
             ->build();
 
 

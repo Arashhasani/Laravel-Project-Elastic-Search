@@ -11,16 +11,8 @@ class TextController extends Controller
     public function getText(Request $request)
     {
 
-        $hosts = [
-            'host' => '127.0.0.1',
-            'port' => '9200',
-            'scheme' => 'http',
-            'user' => 'elastic',
-            'pass' => 'CfPhE7CtnNCiSXDlSkJt'
-        ];
-//    $myCert = 'C:\elasticsearch\config\certs\http_ca.crt';
         $client = ClientBuilder::create()
-            ->setHosts(['http://localhost:9200'])->setBasicAuthentication('elastic','CfPhE7CtnNCiSXDlSkJt')
+            ->setHosts(['http://localhost:9200'])->setBasicAuthentication('elastic','rJuvX56xBE4_erA+VOL5')
             ->build();
 
 
@@ -50,10 +42,11 @@ class TextController extends Controller
         foreach ($response["tokens"] as $item){
             $finalarray[]=$item['token'];
         }
+        $corectcentexe=implode(' ',$finalarray);
 
         $array_count_values = array_count_values($finalarray);
         arsort($array_count_values);
-        return response()->json(['status'=>1,'result'=>$array_count_values]);
+        return response()->json(['status'=>1,'result'=>$array_count_values,'min'=>min(array_values($array_count_values)),'max'=>max(array_values($array_count_values)),'values'=>array_values($array_count_values),'keys'=>array_keys($array_count_values),'correct'=>$corectcentexe]);
 
 
 
