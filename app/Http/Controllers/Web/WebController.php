@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use Elasticsearch\ClientBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class WebController extends Controller
 {
@@ -18,36 +19,36 @@ class WebController extends Controller
     {
 
 
-        $client = ClientBuilder::create()
-            ->setHosts(['http://localhost:9200'])->setBasicAuthentication('elastic', 'rJuvX56xBE4_erA+VOL5')
-            ->build();
+
+        $deleteresponse = Http::withBasicAuth('elastic', 'rJuvX56xBE4_erA+VOL5')->delete('http://localhost:9200/my-index-000001');
 
 
-        $index = \Illuminate\Support\Str::random();
-        $paramss = [
-            'index' => strval(strtolower($index)),
-            'id' => strval(strtolower($index)),
-            'body' => ["text" => $request['text']]
-        ];
-        $client->index($paramss);
-        $response = $client->get([
-            "index" => strtolower($index),
-            "id" => strtolower($index)
-        ]);
+        $responseee = Http::withBasicAuth('elastic', 'rJuvX56xBE4_erA+VOL5')->withBody(
+            '
+            {
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "english_stop": {
+          "type":       "stop",
+          "stopwords":  "_persian_"
+        }
+      }
+    }
+  }
+}
+              ','application/json'
+        )->put('http://localhost:9200/my-index-000001');
 
 
-
-        $response = $client->indices()->analyze([
-            'index' => strval(strtolower($index)),
-            'body' => [
-                "analyzer" => "stop",
-                "text" => $response['_source']['text'],
-            ]
-        ]);
-
-
+        $response = Http::withBasicAuth('elastic', 'rJuvX56xBE4_erA+VOL5')->withBody(
+            json_encode([
+                'analyzer'=>"english_stop",
+                'text'=>$request['text'],
+            ]),'application/json'
+        )->post('http://localhost:9200/my-index-000001/_analyze');
         $finalarray = array();
-        foreach ($response["tokens"] as $item) {
+        foreach (json_decode($response->body(),true)['tokens'] as $item) {
             $finalarray[] = $item['token'];
         }
 
